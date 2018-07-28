@@ -1,0 +1,40 @@
+#!perl
+use strict;
+use warnings;
+
+use Perl6::Build;
+exit Perl6::Build->new->run(@ARGV);
+
+__END__
+
+=head1 SYNOPSIS
+
+  Usage:
+   $ perl6-build [options] VERSION   PREFIX [-- [configure options]]
+   $ perl6-build [options] COMMITISH PREFIX [-- [configure options]]
+
+  Options:
+   -h, --help      show this help
+   -l, --list      list available versions (latest 20 versions)
+   -L, --list-all  list all available versions
+   -w, --workdir   set working directory, default: ~/.perl6-build
+
+  Example:
+   # List available versions
+   $ perl6-build -l
+
+   # Build and install rakudo-star-2018.04 to ~/perl6
+   $ perl6-build rakudo-star-2018.04 ~/perl6
+
+   # Build and install rakudo git repository (with 2018.06 tag) to ~/perl6
+   $ perl6-build 2018.06 ~/perl6
+
+   # Build and install rakudo git repository (with HEAD) to ~/perl6-{describe}
+   # where {describe} will be replaced by `git describe` such as `2018.06-259-g72c8cf68c`
+   $ perl6-build HEAD ~/perl6-'{describe}'
+
+   # Build and install rakudo git repository with jvm backend
+   # configure options must be specified after '--'
+   $ perl6-build HEAD ~/jvm-'{describe}' -- --backends jvm --gen-nqp
+
+=cut
