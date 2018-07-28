@@ -1,0 +1,52 @@
+#!/usr/bin/env perl
+#
+# Summary: Uninstall a Perl6 version
+#
+# Usage: p6env uninstall [-f|--force] <version>
+#
+#  -f, --force  uninstall versions without prompting
+#
+use strict;
+use warnings;
+use Getopt::Long ();
+use File::Spec;
+use File::Path ();
+
+Getopt::Long::Configure(qw(default no_auto_abbrev no_ignore_case));
+Getopt::Long::GetOptions
+    "f|force"  => \my $force,
+    "h|help"   => \my $help,
+    "complete" => \my $complete,
+or exit 1;
+
+# Provide p6env completions
+if ($complete) {
+    print "$_\n" for qw(--force);
+    exec qw(p6env versions --bare);
+    exit 255;
+}
+
+if ($help) {
+    open my $fh, "<", $0 or die;
+    my $first = <$fh>;
+    while (<$fh>) {
+        s/^#// and print and next;
+        exit;
+    }
+}
+
+my $version = shift or die "Invalid argument. Try `p6env uninstall --help`.\n";
+my $root = $ENV{P6ENV_ROOT} || File::Spec->catdir($ENV{HOME}, ".p6env");
+my $prefix = File::Spec->catdir($root, "versions", $version);
+die "No such version: $version\n" if !-d $prefix;
+
+if (!$force) {
+    local $| = 1;
+    print "Remove $version? [yN] ";
+    my $answer = <STDIN>;
+    if ($answer !~ /^(y|yes)$/i) {
+        die "Abort\n";
+    }
+}
+
+File::Path::rmtree($prefix);

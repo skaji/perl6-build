@@ -1,0 +1,93 @@
+#!/usr/bin/env perl
+#
+# Summary: Install a Perl6 version using perl6-build
+#
+# Usage: p6env install <rakudo-star-version> [-- [configure options]]
+#        p6env install <rakudo-commitish>    [-- [configure options]]
+#        p6env install -l|--list
+#        p6env install -L|--list-all
+#
+#  -l, --list      list available versions (latest 20 versions)
+#  -L, --list-all  list all available versions
+#      --as NAME   install perl6 as NAME
+#
+#  Example:
+#   # install rakudo-star-2018.04
+#   $ p6env install rakudo-star-2018.04
+#
+#   # Install perl6 from rakudo git repository with 2018.06 tag
+#   $ p6env install 2018.06
+#
+#   # Install perl6 from rakudo git repository with HEAD
+#   $ p6env install HEAD
+#
+#   # Install perl6 from rakudo git repository with jvm backend
+#   # configure options must be specified after '--'
+#   $ p6env install HEAD --as jvm-'{describe}' -- --backends jvm --gen-nqp
+#
+use strict;
+use warnings;
+use FindBin;
+use Getopt::Long ();
+use File::Spec;
+
+my @configure_option;
+my ($index) = grep { $ARGV[$_] eq '--' } 0..$#ARGV;
+if (defined $index) {
+    (undef, @configure_option) = splice @ARGV, $index, @ARGV - $index;
+}
+
+Getopt::Long::Configure(qw(default no_auto_abbrev no_ignore_case));
+Getopt::Long::GetOptions
+    "l|list"      => \my $list,
+    "L|list-all"  => \my $list_all,
+    "h|help"      => \my $help,
+    "as=s"        => \my $as,
+    "complete"    => \my $complete,
+or exit 1;
+
+# Provide p6env completions
+if ($complete) {
+    print "$_\n" for qw(--list --list-all --as);
+    exit;
+}
+
+if ($help) {
+    open my $fh, "<", $0 or die;
+    my $first = <$fh>;
+    while (<$fh>) {
+        s/^#// and print and next;
+        exit;
+    }
+}
+
+my $perl6_build = File::Spec->catdir($FindBin::Bin, "perl6-build");
+if ($list || $list_all) {
+    exec $^X, $perl6_build, $list ? "-l" : "-L";
+    exit 255;
+}
+
+my $version = shift or die "Invalid argument. Try `p6env install --help`.\n";
+my $root = $ENV{P6ENV_ROOT} || File::Spec->catdir($ENV{HOME}, ".p6env");
+if (!$as) {
+    if ($version eq 'HEAD') {
+        $as = '{describe}';
+    } else {
+        $as = $version;
+    }
+}
+my $prefix = File::Spec->catdir($root, "versions", $as);
+my @cmd = (
+    $^X,
+    $perl6_build,
+    "--workdir", $root,
+    $version,
+    $prefix,
+    (@configure_option ? ("--", @configure_option) : ()),
+);
+
+my $ok = !system @cmd;
+if ($ok) {
+    system "p6env", "rehash";
+}
+exit($ok ? 0 : 1);
