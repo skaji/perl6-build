@@ -25,6 +25,9 @@
 #   # Install rakudo-star-2018.04 with jvm backend
 #   $ p6env install --jvm rakudo-star-2018.04
 #
+#   # Install perl6 from rakudo git repository with 2018.06 tag and custom configure options
+#   $ p6env install 2018.06 --as 2018.06-custom -- --backends moar --with-nqp /path/to/bin/nqp
+#
 use strict;
 use warnings;
 use FindBin;
