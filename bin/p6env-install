@@ -10,6 +10,7 @@
 #  -l, --list      list available versions (latest 20 versions)
 #  -L, --list-all  list all available versions
 #      --as NAME   install perl6 as NAME
+#      --jvm       install perl6 with jvm backend
 #
 #  Example:
 #   # Install rakudo-star-2018.04
@@ -21,10 +22,8 @@
 #   # Install perl6 from rakudo git repository with HEAD
 #   $ p6env install HEAD
 #
-#   # Install perl6 from rakudo git repository with jvm backend
-#   #  * configure options must be specified after '--'
-#   #  * '{describe}' will be replaced by `git describe`
-#   $ p6env install HEAD --as jvm-'{describe}' -- --backends jvm --gen-nqp
+#   # Install rakudo-star-2018.04 with jvm backend
+#   $ p6env install --jvm rakudo-star-2018.04
 #
 use strict;
 use warnings;
@@ -45,6 +44,7 @@ Getopt::Long::GetOptions
     "h|help"      => \my $help,
     "as=s"        => \my $as,
     "complete"    => \my $complete,
+    "jvm"         => \my $jvm,
 or exit 1;
 
 # Provide p6env completions
@@ -76,12 +76,14 @@ if (!$as) {
     } else {
         $as = $version;
     }
+    $as = "$as-jvm" if $jvm;
 }
 my $prefix = File::Spec->catdir($root, "versions", $as);
 my @cmd = (
     $^X,
     $perl6_build,
     "--workdir", $root,
+    $jvm ? '--jvm' : (),
     $version,
     $prefix,
     (@configure_option ? ("--", @configure_option) : ()),
