@@ -7,14 +7,14 @@ use File::Which ();
 use HTTP::Tinyish;
 use Perl6::Build::Builder;
 
-our $URL = 'https://rakudo.perl6.org/downloads/star';
+our $URL = 'https://rakudo.perl6.org/downloads/star/';
 
 sub _http {
     my $class = shift;
     for my $try (map "HTTP::Tinyish::$_", qw(Curl Wget HTTPTiny LWP)) {
         HTTP::Tinyish->configure_backend($try) or next;
         $try->supports("https") or next;
-        return $try->new(agent => 'perl6-build');
+        return $try->new(agent => 'perl6-build', verify_SSL => 1);
     }
     die "No http clients are available";
 }
