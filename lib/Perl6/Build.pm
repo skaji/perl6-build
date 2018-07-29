@@ -53,8 +53,14 @@ sub run {
         "l|list"      => \my $list,
         "L|list-all"  => \my $list_all,
         "h|help"      => \my $help,
+        "jvm"         => \my $jvm,
         "w|workdir=s" => \$self->{workdir},
     or exit 1;
+
+    if (@configure_option and $jvm) {
+        die "--jvm option may conflict with configure options after --; "
+          . "please specify either.\n";
+    }
 
     if ($help) {
         $self->show_help;
@@ -81,6 +87,7 @@ sub run {
 
     if ($version =~ /^rakudo-star-/) {
         my $star = Perl6::Build::Builder::RakudoStar->new(
+            backend => $jvm ? 'jvm' : 'moar',
             version => $version,
             cache_dir => $self->cache_dir,
             build_dir => $self->build_dir,
@@ -90,6 +97,7 @@ sub run {
         $star->build($prefix, @configure_option);
     } else {
         my $source = Perl6::Build::Builder::Source->new(
+            backend => $jvm ? 'jvm' : 'moar',
             commitish => $version,
             build_dir => $self->build_dir,
             git_reference_dir => $self->git_reference_dir,

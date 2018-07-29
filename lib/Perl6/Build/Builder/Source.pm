@@ -78,7 +78,13 @@ sub describe {
 
 sub build {
     my ($self, $prefix, @option) = @_;
-    @option = qw(--backends moar --gen-moar) if !@option;
+    if (!@option) {
+        if ($self->{backend} eq 'jvm') {
+            @option = qw(--backends jvm --gen-nqp);
+        } else {
+            @option = qw(--backends moar --gen-moar);
+        }
+    }
     if (!grep { $_ eq "--git-reference" } @option) {
         unshift @option, "--git-reference", $self->{git_reference_dir};
     }

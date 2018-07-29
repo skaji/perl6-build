@@ -78,7 +78,13 @@ sub _unpack {
 
 sub build {
     my ($self, $prefix, @option) = @_;
-    @option = qw(--backends moar --gen-moar) if !@option;
+    if (!@option) {
+        if ($self->{backend} eq 'jvm') {
+            @option = qw(--backends jvm --gen-nqp);
+        } else {
+            @option = qw(--backends moar --gen-moar);
+        }
+    }
     my $builder = Perl6::Build::Builder->new(log_file => $self->{log_file});
     $builder->build($self->{dir}, $prefix, @option);
 }

@@ -18,6 +18,7 @@ __END__
    -l, --list      list available versions (latest 20 versions)
    -L, --list-all  list all available versions
    -w, --workdir   set working directory, default: ~/.perl6-build
+       --jvm       build perl6 with jvm backend
 
   Example:
    # List available versions
@@ -34,7 +35,6 @@ __END__
    $ perl6-build HEAD ~/perl6-'{describe}'
 
    # Build and install rakudo git repository with jvm backend
-   # configure options must be specified after '--'
-   $ perl6-build HEAD ~/jvm-'{describe}' -- --backends jvm --gen-nqp
+   $ perl6-build --jvm 2018.06 ~/2018.06-jvm
 
 =cut
