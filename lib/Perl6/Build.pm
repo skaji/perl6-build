@@ -2,6 +2,7 @@ package Perl6::Build;
 use strict;
 use warnings;
 
+use Cwd ();
 use File::Path ();
 use File::Spec;
 use File::Temp ();
@@ -82,6 +83,9 @@ sub run {
 
     my ($version, $prefix) = @ARGV;
     die "Invalid arguments; try `perl6-build --help` for help.\n" if !$prefix;
+    if (!File::Spec->file_name_is_absolute($prefix)) {
+        $prefix = File::Spec->canonpath(File::Spec->catdir(Cwd::cwd(), $prefix));
+    }
 
     File::Path::mkpath($_) for grep !-d, $self->cache_dir, $self->build_dir, $self->git_reference_dir;
 
