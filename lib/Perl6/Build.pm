@@ -29,9 +29,14 @@ sub git_reference_dir {
     File::Spec->catdir($self->{workdir}, "git_reference");
 }
 
+sub build_base_dir {
+    my $self = shift;
+    File::Spec->catdir($self->{workdir}, "build");
+}
+
 sub build_dir {
     my $self = shift;
-    File::Spec->catdir($self->{workdir}, "build", $self->{id});
+    File::Spec->catdir($self->build_base_dir, $self->{id});
 }
 
 sub log_file {
@@ -112,6 +117,7 @@ sub run {
         $prefix =~ s/\{describe\}/$describe/g;
         $source->build($prefix, @configure_option);
     }
+    $self->cleanup_build_base_dir;
     return 0;
 }
 
@@ -128,6 +134,22 @@ sub show_help {
         }
     }
     print "\n";
+}
+
+sub cleanup_build_base_dir {
+    my $self = shift;
+    my $base = $self->build_base_dir;
+    opendir my ($dh), $base or die "$base: $!";
+    my @dir =
+        reverse
+        sort
+        grep { -d }
+        map { File::Spec->catdir($base, $_) }
+        grep { !/^\.{1,2}$/ }
+        readdir $dh;
+    return if @dir <= 10;
+    warn "Expiring @{[ @dir - 10 ]} build directories\n";
+    File::Path::rmtree($_) for @dir[10..$#dir];
 }
 
 1;
