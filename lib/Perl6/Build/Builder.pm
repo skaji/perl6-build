@@ -22,7 +22,7 @@ sub _system {
 sub build {
     my ($self, $dir, $prefix, @option) = @_;
 
-    die "Already exists $prefix\n" if -e $prefix;
+    die "There already exists $prefix\n" if -e $prefix;
 
     if (!grep { $_ eq "--make-install" } @option) {
         unshift @option, "--make-install";

@@ -50,7 +50,7 @@ sub fetch {
 
 sub _fetch {
     my ($self, $version, $file) = @_;
-    my $url = "$URL/$version.tar.gz";
+    my $url = "$URL$version.tar.gz";
     warn "Fetching $url\n";
     my $temp = join ".", $file, time, $$;
     my $res = $self->_http->mirror($url => $temp);
