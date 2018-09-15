@@ -43,9 +43,9 @@ sub _update {
         if (-d $target) {
             my $guard = pushd $target;
             warn "Updating $URL->{$repo}\n";
-            !system "git", "pull", "-t", "-p", "-q" or die "Failed\n";
+            !system "git", "pull", "--recurse-submodules", "-t", "-p", "-q" or die "Failed\n";
         } else {
-            !system "git", "clone", $URL->{$repo}, $target or die "Failed\n";
+            !system "git", "clone", "--recurse-submodules", $URL->{$repo}, $target or die "Failed\n";
         }
     }
 }
