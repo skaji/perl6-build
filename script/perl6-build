@@ -7,6 +7,10 @@ exit Perl6::Build->new->run(@ARGV);
 
 __END__
 
+=head1 NAME
+
+perl6-build - build rakudo Perl6
+
 =head1 SYNOPSIS
 
   Usage:
@@ -39,5 +43,16 @@ __END__
 
    # Build and install rakudo from git repository (2018.06 tag) with custom configure options
    $ perl6-build 2018.06 ~/2018.06-custom -- --backends moar --with-nqp /path/to/bin/nqp
+
+=head1 AUTHOR
+
+Shoichi Kaji <skaji@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2018 Shoichi Kaji <skaji@cpan.org>
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

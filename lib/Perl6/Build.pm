@@ -2,6 +2,7 @@ package Perl6::Build;
 use strict;
 use warnings;
 
+use 5.10.1; # rakudo's Configure.pl requires 5.10.1. We follow that.
 use Cwd ();
 use File::Path ();
 use File::Spec;
@@ -10,7 +11,7 @@ use Getopt::Long ();
 use Perl6::Build::Builder::RakudoStar;
 use Perl6::Build::Builder::Source;
 use Perl6::Build::Builder;
-use Pod::Text ();
+use Pod::Simple::SimpleTree;
 
 our $VERSION = '0.001';
 
@@ -125,17 +126,18 @@ sub run {
 
 sub show_help {
     my $self = shift;
-    open my $fh, ">", \my $out;
-    Pod::Text->new->parse_from_file($0, $fh);
-    print "\n";
-    for my $line (split /\n/, $out) {
-        if ($line =~ s/^[ ]{6}//) {
-            print "  $line\n";
-        } elsif (!$line) {
-            print "\n";
+    my $root = Pod::Simple::SimpleTree->new->parse_file($0)->root;
+    my ($name, $attr, @node) = @$root;
+    my $synopsis;
+    while (my $node = shift @node) {
+        my ($name, $attr, $value) = @$node;
+        if ($value eq 'SYNOPSIS') {
+            my $next = shift @node;
+            $synopsis = $next->[2];
+            last;
         }
     }
-    print "\n";
+    print "\n", $synopsis, "\n\n";
 }
 
 sub cleanup_build_base_dir {
