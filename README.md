@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/skaji/perl6-build.svg?branch=master)](https://travis-ci.com/skaji/perl6-build)
+
 # NAME
 
 Perl6::Build - build rakudo Perl6
