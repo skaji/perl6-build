@@ -47,7 +47,7 @@
    "provides" : {
       "Perl6::Build" : {
          "file" : "lib/Perl6/Build.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       },
       "Perl6::Build::Builder" : {
          "file" : "lib/Perl6/Build/Builder.pm"
@@ -71,7 +71,7 @@
          "web" : "https://github.com/skaji/perl6-build"
       }
    },
-   "version" : "0.001",
+   "version" : "0.002",
    "x_generated_by_perl" : "v5.28.0",
    "x_serialization_backend" : "Cpanel::JSON::XS version 4.06",
    "x_static_install" : 1

@@ -13,7 +13,7 @@ use Perl6::Build::Builder::Source;
 use Perl6::Build::Builder;
 use Pod::Simple::SimpleTree;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 sub new {
     my ($class, %args) = @_;
