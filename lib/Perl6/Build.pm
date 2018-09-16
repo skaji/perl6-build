@@ -11,7 +11,7 @@ use Getopt::Long ();
 use Perl6::Build::Builder::RakudoStar;
 use Perl6::Build::Builder::Source;
 use Perl6::Build::Builder;
-use Pod::Simple::SimpleTree;
+use Pod::Usage ();
 
 our $VERSION = '0.002';
 
@@ -126,18 +126,17 @@ sub run {
 
 sub show_help {
     my $self = shift;
-    my $root = Pod::Simple::SimpleTree->new->parse_file($0)->root;
-    my ($name, $attr, @node) = @$root;
-    my $synopsis;
-    while (my $node = shift @node) {
-        my ($name, $attr, $value) = @$node;
-        if ($value eq 'SYNOPSIS') {
-            my $next = shift @node;
-            $synopsis = $next->[2];
-            last;
-        }
-    }
-    print "\n", $synopsis, "\n\n";
+    open my $fh, '>', \my $out;
+    Pod::Usage::pod2usage
+        exitval => 'noexit',
+        input => $0,
+        output => $fh,
+        sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
+        verbose => 99,
+    ;
+    $out =~ s/^[ ]{4,6}/  /mg;
+    $out =~ s/\n$//;
+    print $out;
 }
 
 sub cleanup_build_base_dir {
@@ -168,36 +167,10 @@ Perl6::Build - build rakudo Perl6
 
 =head1 SYNOPSIS
 
-  Usage:
-   $ perl6-build [options] VERSION   PREFIX [-- [configure options]]
-   $ perl6-build [options] COMMITISH PREFIX [-- [configure options]]
+  $ perl6-build [options] VERSION   PREFIX [-- [configure options]]
+  $ perl6-build [options] COMMITISH PREFIX [-- [configure options]]
 
-  Options:
-   -h, --help      show this help
-   -l, --list      list available versions (latest 20 versions)
-   -L, --list-all  list all available versions
-   -w, --workdir   set working directory, default: ~/.perl6-build
-       --jvm       build perl6 with jvm backend
-
-  Example:
-   # List available versions
-   $ perl6-build -l
-
-   # Build and install rakudo-star-2018.04 to ~/perl6
-   $ perl6-build rakudo-star-2018.04 ~/perl6
-
-   # Build and install rakudo from git repository (2018.06 tag) to ~/perl6
-   $ perl6-build 2018.06 ~/perl6
-
-   # Build and install rakudo from git repository (HEAD) to ~/perl6-{describe}
-   # where {describe} will be replaced by `git describe` such as `2018.06-259-g72c8cf68c`
-   $ perl6-build HEAD ~/perl6-'{describe}'
-
-   # Build and install rakudo from git repository (HEAD) with jvm backend
-   $ perl6-build --jvm 2018.06 ~/2018.06-jvm
-
-   # Build and install rakudo from git repository (2018.06 tag) with custom configure options
-   $ perl6-build 2018.06 ~/2018.06-custom -- --backends moar --with-nqp /path/to/bin/nqp
+See L<perl6-build|https://metacpan.org/pod/distribution/Perl6-Build/script/perl6-build>.
 
 =head1 INSTALLATION
 
