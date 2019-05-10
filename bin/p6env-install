@@ -55,7 +55,7 @@ or exit 1;
 
 # Provide p6env completions
 if ($complete) {
-    print "$_\n" for qw(--list --list-all --as);
+    print "$_\n" for qw(--list --list-all --as --version --jvm);
     exit;
 }
 
