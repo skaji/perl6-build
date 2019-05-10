@@ -11,6 +11,7 @@
 #  -L, --list-all  list all available versions
 #      --as NAME   install perl6 as NAME
 #      --jvm       install perl6 with jvm backend
+#      --version   show version for perl6-build
 #
 #  Example:
 #   # Install rakudo-star-2018.04
@@ -30,6 +31,7 @@
 #
 use strict;
 use warnings;
+use Cwd ();
 use FindBin;
 use Getopt::Long ();
 use File::Spec;
@@ -44,10 +46,11 @@ Getopt::Long::Configure(qw(default no_auto_abbrev no_ignore_case));
 Getopt::Long::GetOptions
     "l|list"      => \my $list,
     "L|list-all"  => \my $list_all,
-    "h|help"      => \my $help,
+    "h|help"      => \my $show_help,
     "as=s"        => \my $as,
     "complete"    => \my $complete,
     "jvm"         => \my $jvm,
+    "version"     => \my $show_version,
 or exit 1;
 
 # Provide p6env completions
@@ -56,7 +59,7 @@ if ($complete) {
     exit;
 }
 
-if ($help) {
+if ($show_help) {
     open my $fh, "<", $0 or die;
     my $first = <$fh>;
     while (<$fh>) {
@@ -64,12 +67,19 @@ if ($help) {
         exit;
     }
 }
-
 my $perl6_build = File::Spec->catdir($FindBin::Bin, "perl6-build");
-if ($list || $list_all) {
-    exec $^X, $perl6_build, $list ? "-l" : "-L";
+my $base_dir = Cwd::abs_path(File::Spec->catdir($FindBin::Bin, ".."));
+
+if ($show_version) {
+    exec $^X, $perl6_build, "--version";
     exit 255;
 }
+if ($list || $list_all) {
+    my $ok = !system $^X, $perl6_build, $list ? "-l" : "-L";
+    system $^X, $perl6_build, "--ensure-latest-version", $base_dir if !$ok;
+    exit($ok ? 0 : 1);
+}
+
 
 my $version = shift or die "Invalid argument. Try `p6env install --help`.\n";
 my $root = $ENV{P6ENV_ROOT} || File::Spec->catdir($ENV{HOME}, ".p6env");
@@ -95,5 +105,7 @@ my @cmd = (
 my $ok = !system @cmd;
 if ($ok) {
     system "p6env", "rehash";
+} else {
+    system $^X, $perl6_build, "--ensure-latest-version", $base_dir;
 }
 exit($ok ? 0 : 1);

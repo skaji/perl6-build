@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use Perl6::Build;
-exit Perl6::Build->new->run(@ARGV);
+use Perl6::Build::CLI;
+exit Perl6::Build::CLI->new->run(@ARGV);
 
 __END__
 
@@ -19,6 +19,7 @@ perl6-build - build rakudo Perl6
 =head1 OPTIONS
 
   -h, --help      show this help
+      --version   show perl6-build version
   -l, --list      list available versions (latest 20 versions)
   -L, --list-all  list all available versions
   -w, --workdir   set working directory, default: ~/.perl6-build
