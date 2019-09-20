@@ -16,7 +16,7 @@ sub available {
     if (!$res->{success}) {
         my $msg = $res->{status} == 599 ? "\n$res->{content}" : "";
         chomp $msg;
-        die "$res->{status} $res->{reason}, $URL$msg\n";
+        die "$res->{status} $res->{reason}, $url$msg\n";
     }
     my %available = map { $_ => 1 }
         $res->{content} =~ m{/dl/star/(rakudo-star-\d+\.\d+)\.tar\.gz}g;
