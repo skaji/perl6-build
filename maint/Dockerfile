@@ -1,4 +1,4 @@
-FROM perl:5.10
+FROM perl:latest
 
 RUN curl --compressed -sSL https://git.io/cpm -o /usr/local/bin/cpm
 RUN chmod +x /usr/local/bin/cpm
